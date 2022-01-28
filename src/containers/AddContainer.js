@@ -1,16 +1,35 @@
 import React, { useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { addWord } from "../app/services/wordReducer";
 import InputBox from "../components/InputBox";
-import { kindOf } from "../export_variables/kindOf";
+import { kindOf, kindOfDict } from "../export_variables/kindOf";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase";
+
 const AddContainer = () => {
+  const word = useSelector((state) => state.wordReducer.wordList);
+  console.log(word);
   const dispatch = useDispatch();
+  const dict = {};
+  const navigate = useNavigate();
   const handleOnSubmit = (e) => {
     e.preventDefault();
     for (let i = 0; i < inputRef.current.length; i++) {
-      console.log(inputRef.current[i].value);
+      dict[kindOfDict[i]] = inputRef.current[i].value;
     }
+    dispatch(addWord(dict));
+    fetchingData(dict);
+    console.log(word);
+    // navigate("/");
   };
+  const fetchingData = async (dict) => {
+    await addDoc(collection(db, "wordList"), dict).then(navigate("/"));
+  };
+
+  React.useEffect(() => {}, []);
+
   const inputRef = useRef([]);
 
   return (

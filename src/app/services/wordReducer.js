@@ -1,4 +1,13 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice, current, createAsyncThunk } from "@reduxjs/toolkit";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+
+const fetchUserById = createAsyncThunk("words/getWords", async (thunkAPI) => {
+  const response = await getDocs(collection(db, "wordList")).then((data) =>
+    data.json()
+  );
+  return response;
+});
 
 const initialState = {
   wordList: [
@@ -19,7 +28,6 @@ export const wordSlice = createSlice({
   reducers: {
     addWord: (state, action) => {
       state.wordList.push(action.payload);
-      console.log(current(state.bucketlist));
     },
     //   deleteBucket: (state, action) => {
     //     const newBucketList = current(state.bucketlist).filter((item, index) => {
@@ -38,6 +46,7 @@ export const wordSlice = createSlice({
     //     return { bucketlist: new_bucket_list };
     //   },
   },
+  extraReducers: {},
 });
 
 export const { addWord } = wordSlice.actions;

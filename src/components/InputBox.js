@@ -2,7 +2,6 @@ import React, { forwardRef } from "react";
 import styled from "styled-components";
 
 const InputBox = forwardRef((props, ref) => {
-  console.log(props.word);
   return (
     <div>
       <Wrapper>
