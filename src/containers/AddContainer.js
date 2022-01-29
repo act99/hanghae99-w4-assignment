@@ -1,16 +1,19 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import InputBox from "../components/InputBox";
 import { kindOf, kindOfDict } from "../export_variables/kindOf";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
+import { createWords } from "../app/services/ducks";
 
 const AddContainer = () => {
-  const word = useSelector((state) => state.wordReducer.wordList);
-  console.log(word);
-  // const dispatch = useDispatch();
+  //** 패치했을 때, */
+  const dispatch = useDispatch();
+  const bucket_list = useSelector((state) => state.words.wordList);
+
+  const { id } = useParams();
   let dict = {};
   const navigate = useNavigate();
   const handleOnSubmit = (e) => {
@@ -19,35 +22,65 @@ const AddContainer = () => {
       dict[kindOfDict[i]] = inputRef.current[i].value;
     }
     dict = { ...dict, completed: false };
-    console.log(dict);
-    // dispatch(getWord(dict));
-    fetchingData(dict);
-    console.log(word);
+    dispatch(createWords(dict));
+    navigate("/");
+  };
+  const handleEdit = (e) => {
+    e.preventDefault();
+    for (let i = 0; i < inputRef.current.length; i++) {
+      dict[kindOfDict[i]] = inputRef.current[i].value;
+    }
+    dict = { ...dict, completed: false };
+    // dispatch(createWords(dict));
     // navigate("/");
   };
-  const fetchingData = async (dict) => {
-    await addDoc(collection(db, "wordList"), dict).then(navigate("/"));
-  };
 
+  console.log(id);
+  console.log(bucket_list);
   React.useEffect(() => {}, []);
 
   const inputRef = useRef([]);
 
+  // ** 추가페이지일 때 페이지일때
+  if (id === undefined) {
+    return (
+      <div>
+        <AddWrapper>
+          <h3>단어 추가하기</h3>
+          <form onSubmit={handleOnSubmit}>
+            {Array.from({ length: 5 }, (item, index) => {
+              return (
+                <InputBox
+                  key={index}
+                  word={kindOf[index]}
+                  ref={(el) => (inputRef.current[index] = el)}
+                />
+              );
+            })}
+            <Button type="submit">저장하기</Button>
+          </form>
+        </AddWrapper>
+      </div>
+    );
+  }
+  // ** 수정 페이지일때
+
   return (
     <div>
       <AddWrapper>
-        <h3>단어 추가하기</h3>
+        <h3>단어 수정하기</h3>
         <form onSubmit={handleOnSubmit}>
           {Array.from({ length: 5 }, (item, index) => {
             return (
               <InputBox
                 key={index}
                 word={kindOf[index]}
+                exist={bucket_list[parseInt(id)][kindOfDict[index]]}
                 ref={(el) => (inputRef.current[index] = el)}
               />
             );
           })}
-          <Button type="submit">저장하기</Button>
+          <Button type="submit">수정하기</Button>
         </form>
       </AddWrapper>
     </div>

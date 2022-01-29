@@ -1,8 +1,8 @@
-import { Container, CssBaseline } from "@mui/material";
+import { Container, CssBaseline, IconButton } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase.js";
@@ -11,46 +11,42 @@ import { getWord } from "../app/services/wordReducer.js";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { fetchData } from "../app/services/getPostsReducer.js";
+import { green } from "@mui/material/colors";
 const Home = () => {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.words.wordList);
   //**** */
-  const { data, loading, error } = useSelector((state) => state.dataReducer);
-  const word = useSelector((state) => state.wordReducer.wordList);
-  React.useEffect(() => {
-    //**** */
-    const getData = async () => {
-      const data = await getDocs(collection(db, "wordList"));
-      dispatch(getWord(data.docs.map((doc) => doc.data())));
-    };
-    getData();
-    //**** */
-  }, []);
-  console.log(word);
+  React.useEffect(() => {}, []);
   console.log(data);
+  const navigate = useNavigate();
   return (
     <>
       <CssBaseline />
       <Container maxWidth="xl">
-        <button
-          onClick={() => {
-            dispatch(fetchData());
-            console.log(data);
-          }}
-        >
-          ㅎㅇ
-        </button>
         <Grid container spacing={2} mt={3}>
           <Grid item xs={4}>
-            {word.map((doc, index) => {
+            {data.map((doc, index) => {
               return (
                 <WordBox key={index}>
                   <IconBox>
-                    {" "}
                     <h1>{doc["word"]}</h1>
-                    <h2>[{doc["byung"]}]</h2>
+                    <div style={{ display: "flex" }}>
+                      <IconButton>
+                        <CheckIcon color="success" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          navigate("/word/edit/" + index);
+                        }}
+                      >
+                        <EditIcon color="success" />
+                      </IconButton>
+                      <IconButton>
+                        <DeleteOutlineIcon color="success" />
+                      </IconButton>
+                    </div>
                   </IconBox>
-
+                  <h2>[{doc["byung"]}]</h2>
                   <h3>{doc["means"]}</h3>
                   <h4>{doc["example"]}</h4>
                   <h4>{doc["translation"]}</h4>
@@ -76,7 +72,10 @@ const WordBox = styled.div`
   border-radius: 10px;
   margin: 15px;
   padding: 15px;
-
+  h2 {
+    font-size: small;
+    margin: 0px;
+  }
   h3 {
     font-size: medium;
     margin: 0px;
@@ -89,9 +88,11 @@ const WordBox = styled.div`
 `;
 
 const IconBox = styled.div`
-  margin-bottom: 6px;
   width: 100%;
   height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   h1 {
     font-weight: bold;
     font-size: x-large;

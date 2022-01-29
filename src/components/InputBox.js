@@ -6,7 +6,7 @@ const InputBox = forwardRef((props, ref) => {
     <div>
       <Wrapper>
         <h2>{props.word}</h2>
-        <Input type="text" ref={ref} />
+        <Input type="text" ref={ref} defaultValue={props.exist} />
       </Wrapper>
     </div>
   );

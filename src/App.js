@@ -15,6 +15,7 @@ function App() {
         </Routes>
         <Routes>
           <Route path="/word/add" element={<AddPage />} />
+          <Route path="/word/edit/:id" element={<AddPage />} />
         </Routes>
       </Wrap>
     </>
