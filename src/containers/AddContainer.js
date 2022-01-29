@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { addWord } from "../app/services/wordReducer";
 import InputBox from "../components/InputBox";
 import { kindOf, kindOfDict } from "../export_variables/kindOf";
 import { addDoc, collection } from "firebase/firestore";
@@ -11,15 +10,17 @@ import { db } from "../firebase";
 const AddContainer = () => {
   const word = useSelector((state) => state.wordReducer.wordList);
   console.log(word);
-  const dispatch = useDispatch();
-  const dict = {};
+  // const dispatch = useDispatch();
+  let dict = {};
   const navigate = useNavigate();
   const handleOnSubmit = (e) => {
     e.preventDefault();
     for (let i = 0; i < inputRef.current.length; i++) {
       dict[kindOfDict[i]] = inputRef.current[i].value;
     }
-    dispatch(addWord(dict));
+    dict = { ...dict, completed: false };
+    console.log(dict);
+    // dispatch(getWord(dict));
     fetchingData(dict);
     console.log(word);
     // navigate("/");
