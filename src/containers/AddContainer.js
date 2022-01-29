@@ -6,12 +6,17 @@ import InputBox from "../components/InputBox";
 import { kindOf, kindOfDict } from "../export_variables/kindOf";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
-import { createWords } from "../app/services/ducks";
+import {
+  addWordFB,
+  createWords,
+  updateWordFB,
+  updateWords,
+} from "../app/services/ducks";
 
 const AddContainer = () => {
   //** 패치했을 때, */
   const dispatch = useDispatch();
-  const bucket_list = useSelector((state) => state.words.wordList);
+  const word_list = useSelector((state) => state.words.wordList);
 
   const { id } = useParams();
   let dict = {};
@@ -22,21 +27,23 @@ const AddContainer = () => {
       dict[kindOfDict[i]] = inputRef.current[i].value;
     }
     dict = { ...dict, completed: false };
-    dispatch(createWords(dict));
+    dispatch(addWordFB(dict));
     navigate("/");
   };
+
   const handleEdit = (e) => {
     e.preventDefault();
     for (let i = 0; i < inputRef.current.length; i++) {
       dict[kindOfDict[i]] = inputRef.current[i].value;
     }
     dict = { ...dict, completed: false };
+    dispatch(updateWordFB(word_list[id].id, dict));
     // dispatch(createWords(dict));
-    // navigate("/");
+    navigate("/");
   };
 
   console.log(id);
-  console.log(bucket_list);
+  console.log(word_list);
   React.useEffect(() => {}, []);
 
   const inputRef = useRef([]);
@@ -69,13 +76,13 @@ const AddContainer = () => {
     <div>
       <AddWrapper>
         <h3>단어 수정하기</h3>
-        <form onSubmit={handleOnSubmit}>
+        <form onSubmit={handleEdit}>
           {Array.from({ length: 5 }, (item, index) => {
             return (
               <InputBox
                 key={index}
                 word={kindOf[index]}
-                exist={bucket_list[parseInt(id)][kindOfDict[index]]}
+                exist={word_list[parseInt(id)][kindOfDict[index]]}
                 ref={(el) => (inputRef.current[index] = el)}
               />
             );
@@ -90,7 +97,7 @@ const AddContainer = () => {
 const AddWrapper = styled.div`
   height: 80vh;
   width: 100%;
-  background-color: aliceblue;
+  background-color: white;
   display: flex;
   flex-direction: column;
   justify-items: center;

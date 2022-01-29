@@ -12,11 +12,21 @@ import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { green } from "@mui/material/colors";
+import {
+  deleteWordFB,
+  deleteWords,
+  loadWordsFB,
+  updateWordFB,
+} from "../app/services/ducks.js";
+
 const Home = () => {
+  const [fetch, setFetch] = React.useState(false);
   const dispatch = useDispatch();
   const data = useSelector((state) => state.words.wordList);
   //**** */
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    dispatch(loadWordsFB());
+  }, [fetch]);
   console.log(data);
   const navigate = useNavigate();
   return (
@@ -27,22 +37,55 @@ const Home = () => {
           <Grid item xs={4}>
             {data.map((doc, index) => {
               return (
-                <WordBox key={index}>
+                <WordBox key={index} completed={doc.completed}>
                   <IconBox>
                     <h1>{doc["word"]}</h1>
                     <div style={{ display: "flex" }}>
-                      <IconButton>
-                        <CheckIcon color="success" />
+                      <IconButton
+                        onClick={() => {
+                          console.log(doc.completed);
+                          dispatch(
+                            doc.completed === true
+                              ? updateWordFB(doc.id, {
+                                  ...doc,
+                                  completed: false,
+                                })
+                              : updateWordFB(doc.id, {
+                                  ...doc,
+                                  completed: true,
+                                })
+                          );
+                          setFetch(fetch === true ? false : true);
+                        }}
+                      >
+                        {doc.completed === true ? (
+                          <CheckIcon sx={{ color: "#ffffff" }} />
+                        ) : (
+                          <CheckIcon color="success" />
+                        )}
+                        {/* <CheckIcon color="success" /> */}
                       </IconButton>
                       <IconButton
                         onClick={() => {
                           navigate("/word/edit/" + index);
                         }}
                       >
-                        <EditIcon color="success" />
+                        {doc.completed === true ? (
+                          <EditIcon sx={{ color: "#ffffff" }} />
+                        ) : (
+                          <EditIcon color="success" />
+                        )}
                       </IconButton>
-                      <IconButton>
-                        <DeleteOutlineIcon color="success" />
+                      <IconButton
+                        onClick={() => {
+                          dispatch(deleteWordFB(doc.id));
+                        }}
+                      >
+                        {doc.completed === true ? (
+                          <DeleteOutlineIcon sx={{ color: "#ffffff" }} />
+                        ) : (
+                          <DeleteOutlineIcon color="success" />
+                        )}
                       </IconButton>
                     </div>
                   </IconBox>
@@ -72,6 +115,7 @@ const WordBox = styled.div`
   border-radius: 10px;
   margin: 15px;
   padding: 15px;
+  color: ${(props) => (props.completed === true ? "white" : "black")};
   h2 {
     font-size: small;
     margin: 0px;
@@ -83,8 +127,9 @@ const WordBox = styled.div`
   h4 {
     font-size: small;
     margin: 0px;
-    color: blue;
+    color: ${(props) => (props.completed === true ? "white" : "blue")};
   }
+  background: ${(props) => (props.completed === true ? "green" : "white")};
 `;
 
 const IconBox = styled.div`
