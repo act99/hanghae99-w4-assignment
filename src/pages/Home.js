@@ -33,7 +33,7 @@ const Home = () => {
     <>
       <CssBaseline />
       <Container maxWidth="xl">
-        <Grid container spacing={2} mt={3}>
+        <Grid container spacing={2} mt={3} columns={{ xs: 4, sm: 8, md: 12 }}>
           {data.map((doc, index) => {
             return (
               <Grid item xs={4}>
