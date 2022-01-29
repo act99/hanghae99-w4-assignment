@@ -34,9 +34,9 @@ const Home = () => {
       <CssBaseline />
       <Container maxWidth="xl">
         <Grid container spacing={2} mt={3}>
-          <Grid item xs={4}>
-            {data.map((doc, index) => {
-              return (
+          {data.map((doc, index) => {
+            return (
+              <Grid item xs={4}>
                 <WordBox key={index} completed={doc.completed}>
                   <IconBox>
                     <h1>{doc["word"]}</h1>
@@ -94,9 +94,9 @@ const Home = () => {
                   <h4>{doc["example"]}</h4>
                   <h4>{doc["translation"]}</h4>
                 </WordBox>
-              );
-            })}
-          </Grid>
+              </Grid>
+            );
+          })}
         </Grid>
       </Container>
       <Link to="/word/add">

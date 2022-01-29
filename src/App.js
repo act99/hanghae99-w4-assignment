@@ -28,5 +28,14 @@ const Wrap = styled.div`
   height: 100vh;
   justify-content: start;
   justify-items: center;
+  background: linear-gradient(
+        90deg,
+        bg-color (dot-space - dot-size),
+        transparent 1%
+      )
+      center,
+    linear-dradient(bg-color (dot-space - dot-size), transparent 1%) center,
+    dot-color;
+  background-size: dot-space dot-space;
 `;
 export default App;
