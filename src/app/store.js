@@ -4,6 +4,8 @@
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 import words from "./services/ducks";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import { persistStore, persistReducer } from "redux-persist";
 
 // export const store = configureStore({
 //   reducer: {
@@ -12,10 +14,15 @@ import words from "./services/ducks";
 //   },
 // });
 
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
 const middlewares = [thunk];
 const enhancer = applyMiddleware(...middlewares);
 const rootReducer = combineReducers({ words });
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const store = createStore(rootReducer, enhancer);
-
-export default store;
+export let store = createStore(persistedReducer, enhancer);
+export let persistor = persistStore(store);

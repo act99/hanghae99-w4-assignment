@@ -13,13 +13,13 @@ const CREATE = "words/CREATE";
 const DELETE = "words/DELETE";
 const LOAD = "words/LOAD";
 const UPDATE = "words/UPDATE";
+const LOAD_S = "word/LOAD";
 // Action Creators
 export function createWords(word) {
   return { type: CREATE, word: word };
 }
 
 export function deleteWords(index) {
-  console.log("지울 버킷 리스트", index);
   return { type: DELETE, index: index };
 }
 export function updateWords(word) {
@@ -30,17 +30,26 @@ export function loadWords(words) {
   return { type: LOAD, words: words };
 }
 
+export function justWord(word) {
+  return { type: LOAD_S, word: word };
+}
+
 // middlewares
 export const loadWordsFB = () => {
   return async function (dispatch) {
     const words_data = await getDocs(collection(db, "wordList"));
-    console.log(words_data);
     let word_list = [];
     words_data.forEach((doc) => {
       word_list.push({ id: doc.id, ...doc.data() });
     });
-    console.log(word_list);
     dispatch(loadWords(word_list));
+  };
+};
+
+export const justwordFB = (word_id) => {
+  return async function (dispatch) {
+    const word_data = await getDoc(db, "wordList", word_id);
+    dispatch(justWord(word_data));
   };
 };
 
@@ -49,7 +58,6 @@ export const addWordFB = (word) => {
     const docRef = await addDoc(collection(db, "wordList"), word);
     const _word = await getDoc(docRef);
     const word_data = { id: _word.id, ..._word.data() };
-    console.log((await getDoc(docRef)).data());
     // dispatch(createWords(word_data));
   };
 };
@@ -58,13 +66,11 @@ export const updateWordFB = (word_id, dict) => {
   return async function (dispatch, getState) {
     const docRef = doc(db, "wordList", word_id);
     await updateDoc(docRef, dict);
-    console.log(getState().words);
     const _word_list = getState().words["wordList"];
     const word_index = _word_list.findIndex((item) => {
       return item.id === word_id;
     });
     dispatch(updateWords(word_index));
-    console.log(_word_list);
   };
 };
 
@@ -81,7 +87,6 @@ export const deleteWordFB = (word_id) => {
       return item.id === word_id;
     });
     dispatch(deleteWords(word_index));
-    console.log(_word_list);
   };
 };
 
@@ -109,7 +114,6 @@ export default function reducer(state = initialState, action = {}) {
       return { wordList: new_wordList };
     }
     case "words/DELETE": {
-      console.log(state.wordList, action);
       const new_wordList = state.wordList.filter((item, index) => {
         return parseInt(action.index) !== index;
       });

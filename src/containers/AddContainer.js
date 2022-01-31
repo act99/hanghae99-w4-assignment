@@ -9,12 +9,17 @@ import { db } from "../firebase";
 import {
   addWordFB,
   createWords,
+  loadWordsFB,
   updateWordFB,
   updateWords,
 } from "../app/services/ducks";
 
 const AddContainer = () => {
+  React.useEffect(async () => {
+    await dispatch(loadWordsFB());
+  }, []);
   //** 패치했을 때, */
+  const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
   const word_list = useSelector((state) => state.words.wordList);
 
@@ -41,10 +46,6 @@ const AddContainer = () => {
     // dispatch(createWords(dict));
     navigate("/");
   };
-
-  console.log(id);
-  console.log(word_list);
-  React.useEffect(() => {}, []);
 
   const inputRef = useRef([]);
 

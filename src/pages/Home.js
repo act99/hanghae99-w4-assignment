@@ -27,7 +27,6 @@ const Home = () => {
   React.useEffect(() => {
     dispatch(loadWordsFB());
   }, [fetch]);
-  console.log(data);
   const navigate = useNavigate();
   return (
     <>
@@ -36,14 +35,13 @@ const Home = () => {
         <Grid container spacing={2} mt={3} columns={{ xs: 4, sm: 8, md: 12 }}>
           {data.map((doc, index) => {
             return (
-              <Grid item xs={4}>
-                <WordBox key={index} completed={doc.completed}>
+              <Grid item xs={4} key={index}>
+                <WordBox completed={doc.completed}>
                   <IconBox>
                     <h1>{doc["word"]}</h1>
                     <div style={{ display: "flex" }}>
                       <IconButton
                         onClick={() => {
-                          console.log(doc.completed);
                           dispatch(
                             doc.completed === true
                               ? updateWordFB(doc.id, {
